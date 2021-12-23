@@ -1,7 +1,10 @@
 import QtQuick 2.15
+import QtQml 2.15
 import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Shapes 1.15
+import QtQuick.Controls.Material 2.15
 
 Window {
     width: 640
@@ -40,6 +43,7 @@ Window {
         GridLayout {
             id: layout
             Layout.fillWidth: true
+            Layout.minimumWidth: 300
             Layout.alignment: Qt.AlignRight | Qt.AlignTop
             rows: 3
             columns: 2
@@ -49,13 +53,24 @@ Window {
                 placeholderText: "$0.00"
                 font.pixelSize: 60
                 GridLayout.columnSpan: 2
+                Layout.fillWidth: true
                 Layout.alignment: Qt.AlignRight | Qt.AlignTop
+
+                onEditingFinished: {
+                    tipAmount = 0;
+                    if (text.length === 0) { return; }
+                    if (text.length > 0 && text.charAt(0) === '$') {
+                        text = text.substring(1)
+                    }
+                    tipAmount = parseInt(text)
+                    text = "$" + tipAmount.toFixed(2)
+                }
             }
 
             Text { text: "Tip (" + Number(tipPercentage) + "%)" }
-            Text { text: "$" + Number(tipAmount*tipPercentage/100) }
+            Text { text: "$" + Number(tipAmount*tipPercentage/100).toFixed(2) }
             Text { text: "Total:" }
-            Text { text: "$" + Number(tipAmount + tipAmount*tipPercentage/100) }
+            Text { text: "$" + Number(tipAmount + tipAmount*tipPercentage/100).toFixed(2) }
         }
 
         Slider {
@@ -67,6 +82,7 @@ Window {
             onValueChanged: {
                 tipPercentage = value
             }
+
         }
 
     }
